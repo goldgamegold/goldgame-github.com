@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contatore di clic</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      margin: 10px;
+      background-color: #333; /* Sfondo grigio scuro */
+      color: white; /* Colore del testo generale */
+    }
+    #counterContainer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #counter {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    #incrementButton {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #555; /* Colore di sfondo del pulsante */
+      color: white; /* Colore del testo del pulsante */
+    }
+    #goldCount {
+      font-size: 18px;
+      margin-top: 10px;
+      color: yellow; /* Colore giallo per la scritta "Lingotti d'oro" */
+    }
+    #buyGoldButton {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+      background-color: #555; /* Colore di sfondo del pulsante "Compra lingotto" */
+      color: white; /* Colore del testo del pulsante "Compra lingotto" */
+    }
+    #priceLabel {
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    #finalMessage {
+      font-size: 16px;
+      color: rgb(43, 193, 247); /* Colore azzurro per il messaggio finale */
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Contatore di clic</h1>
+
+  <div id="counterContainer">
+    <div id="counter">0</div>
+  </div>
+
+  <button id="incrementButton" onclick="incrementa()">Clicca per incrementare</button>
+
+  <div id="goldCount">Lingotti d'oro: 0</div>
+  <button id="buyGoldButton" onclick="buyGold()">Compra lingotto</button>
+  <div id="priceLabel">Prezzo lingotto: 10 clic</div>
+
+  <ul id="playerList"></ul>
+
+  <div id="finalMessage">Acquista un lingotto per ottenere il tuo vecchio punteggio.</div>
+
+  <script>
+    var goldCount = 0; // Inizializza il contatore di lingotti d'oro
+
+    // Funzione per incrementare il contatore
+    function incrementa() {
+      // Recupera il valore corrente del contatore
+      var counterValue = getPlayerScore();
+
+      // Incrementa il contatore di 1
+      counterValue++;
+
+      // Aggiorna il testo del contatore
+      document.getElementById('counter').innerText = counterValue;
+
+      // Se il contatore raggiunge 10, mostra il pulsante "Compra lingotto"
+      if (counterValue === 10) {
+        document.getElementById('buyGoldButton').style.display = 'inline-block';
+      }
+
+      // Salva il punteggio nei localStorage
+      localStorage.setItem("playerScore", counterValue);
+
+      // Aggiorna la lista dei giocatori
+      updatePlayerList();
+    }
+
+    // Funzione per acquistare un lingotto d'oro
+    function buyGold() {
+      // Recupera il valore corrente del contatore
+      var counterValue = getPlayerScore();
+
+      // Se il giocatore ha almeno 10 clic, esegui l'acquisto
+      if (counterValue >= 10) {
+        // Riduci il contatore di 10 clic
+        counterValue -= 10;
+
+        // Incrementa il contatore di lingotti d'oro
+        goldCount++;
+
+        // Aggiorna il testo del contatore
+        document.getElementById('counter').innerText = counterValue;
+
+        // Aggiorna il testo del contatore di lingotti d'oro
+        updateGoldCount();
+      }
+
+      // Salva i progressi nei localStorage
+      localStorage.setItem("playerScore", counterValue);
+      localStorage.setItem("goldCount", goldCount);
+
+      // Aggiorna la lista dei giocatori
+      updatePlayerList();
+    }
+
+    // Funzione per aggiornare il testo del contatore di lingotti d'oro
+    function updateGoldCount() {
+      document.getElementById('goldCount').innerText = "Lingotti d'oro: " + goldCount;
+    }
+
+    // Funzione per ottenere il punteggio dal localStorage
+    function getPlayerScore() {
+      return parseInt(localStorage.getItem("playerScore")) || 0;
+    }
+
+    // Funzione per ottenere il contatore di lingotti d'oro dal localStorage
+    function getGoldCount() {
+      return parseInt(localStorage.getItem("goldCount")) || 0;
+    }
+
+    // Funzione per aggiornare la lista dei giocatori
+    function updatePlayerList() {
+      var playerList = document.getElementById('playerList');
+      var playerScore = getPlayerScore();
+
+      // Aggiungi o aggiorna l'elemento della lista
+      var existingPlayerItem = document.getElementById('playerItem');
+      if (existingPlayerItem) {
+        existingPlayerItem.innerText = "" + playerScore;
+      } else {
+        var playerItem = document.createElement();
+        playerItem.id = 'playerItem';
+        playerItem.innerText = "Giocatore Corrente: " + playerScore;
+        document.body.appendChild(playerItem);
+      }
+    }
+
+    // Aggiorna la lista dei giocatori e il contatore di lingotti d'oro al caricamento della pagina
+    window.onload = function () {
+      goldCount = getGoldCount();
+      updatePlayerList();
+      updateGoldCount();
+      document.getElementById('counter').innerText = getPlayerScore(); // Aggiorna il punteggio del giocatore
+    };
+  </script>
+
+</body>
+</html>
